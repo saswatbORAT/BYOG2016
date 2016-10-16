@@ -1,0 +1,5 @@
+local background = display.newImageRect( "Icon.png", 57, 57)
+background.x = math.random(0,display.contentWidth)
+background.y = math.random(0,display.contentHeight)
+background.alpha = math.random()
+print("hello")
