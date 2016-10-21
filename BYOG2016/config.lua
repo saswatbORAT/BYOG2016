@@ -1,23 +1,16 @@
---
--- For more information on config.lua see the Corona SDK Project Configuration Guide at:
--- https://docs.coronalabs.com/guide/basics/configSettings
---
+local normalW, normalH = 1136, 640
 
-application =
-{
-	content =
-	{
+if not display then return end -- This is needed for dekstop app
+
+local w, h = display.pixelWidth, display.pixelHeight
+local scale = math.max(normalW / w, normalH / h)
+w, h = w * scale, h * scale
+
+application = {
+    content = {
 		width = 1136,
-		height = 640, 
-		scale = "letterBox",
-		fps = 30,
-		
-		--[[
-		imageSuffix =
-		{
-			    ["@2x"] = 2,
-			    ["@4x"] = 4,
-		},
-		--]]
-	},
+        height = 640,
+        scale = 'letterbox',
+        fps = 60
+    }
 }
