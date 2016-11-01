@@ -20,44 +20,55 @@ local function btnCallback(event)
 	end
 end
 
+local logoSize ={width = 1100,height = 400,numFrames = 2}
+
+local logoSequences = {
+{name = "blink",start = 1,count = 2,time = 500},
+}
+
 function scene:create()
 	mainGroup.x, mainGroup.y = 0, 0
-	local background = display.newImageRect("res/bg.png",2016, 1136)
-	background.x, background.y = display.contentCenterX, display.contentCenterY
-	mainGroup:insert(background)
+	
+	display.setDefault("background", 0,0,0)
+	
+	local sheet = graphics.newImageSheet( "res/logo_sheet.png", logoSize )
+	local logo = display.newSprite(sheet, logoSequences)
+	logo.x, logo.y = display.contentCenterX, 200
+	logo:play()
+	mainGroup:insert(logo)
 	
 	playBtn = widget.newButton({
 					x = display.contentCenterX,
-					y = display.contentCenterY * 0.5,
-					width = 123,
-					height = 63,
-					defaultFile = "box.png",
-					overFile = "box.png",
-					label = "play",
+					y = 500,
+					width = 400,
+					height = 160,
+					defaultFile = "res/buttons/playBtn.png",
+					overFile = "res/buttons/playBtn.png",
+					label = "",
 					onEvent = btnCallback
 				})
 	playBtn.carta = "play"
 	
 	exitBtn = widget.newButton({
 					x = display.contentCenterX,
-					y = display.contentCenterY * 1.5,
-					width = 123,
-					height = 63,
-					defaultFile = "box.png",
-					overFile = "box.png",
-					label = "exit",
+					y = 900,
+					width = 400,
+					height = 160,
+					defaultFile = "res/buttons/exitBtn.png",
+					overFile = "res/buttons/exitBtn.png",
+					label = "",
 					onEvent = btnCallback
 				})
 	exitBtn.carta = "exit"
 	
 	learnBtn = widget.newButton({
 					x = display.contentCenterX,
-					y = display.contentCenterY,
-					width = 123,
-					height = 63,
-					defaultFile = "box.png",
-					overFile = "box.png",
-					label = "Learn",
+					y = 700,
+					width = 400,
+					height = 160,
+					defaultFile = "res/buttons/learnBtn.png",
+					overFile = "res/buttons/learnBtn.png",
+					label = "",
 					onEvent = btnCallback
 				})
 	learnBtn.carta = "learn"

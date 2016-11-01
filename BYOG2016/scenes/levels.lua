@@ -6,10 +6,10 @@ local scene = composer.newScene()
 
 local mainGroup = display.newGroup()
 local backBtn
-local constX, constY = 0,300
+local constX, constY = -300,500
 local startX, startY = constX, constY
-local btnWidth, btnHeight, btnSpaceX, btnSpaceY = 100, 100, 200, 200
-local btnCount = 10
+local btnWidth, btnHeight, btnSpaceX, btnSpaceY = 150, 150, 300, 300
+local btnCount = 9
 
 local function btnCallback(event)
 	if(event.phase == "ended")then
@@ -26,18 +26,16 @@ end
 
 function scene:create()
 	mainGroup.x, mainGroup.y = 0, 0
-	local background = display.newImageRect("res/bg.png",2016, 1136)
-	background.x, background.y = display.contentCenterX, display.contentCenterY
-	mainGroup:insert(background)
+	display.setDefault("background", 0,0,0)
 	
 	backBtn = widget.newButton({
-					x = -320,
+					x = -400,
 					y = 100,
-					width = 123,
-					height = 63,
-					defaultFile = "box.png",
-					overFile = "box.png",
-					label = "back",
+					width = 400,
+					height = 160,
+					defaultFile = "res/buttons/backBtn.png",
+					overFile = "res/buttons/backBtn.png",
+					label = "",
 					onEvent = btnCallback
 				})
 	backBtn.carta = "back"
@@ -53,8 +51,13 @@ function scene:create()
 					defaultFile = "box.png",
 					overFile = "box.png",
 					label = tostring(i),
+					font = "res/lostWage.TTF",
+					fontSize = 100,
 					onEvent = btnCallback
 				})
+		if(i == 10)then
+			btn:setLabel("1O")
+		end
 		btn.carta = tostring(i)
 		mainGroup:insert(btn)
 		startX = startX + btnSpaceX
@@ -63,6 +66,7 @@ function scene:create()
 			startX = constX
 		end
 	end
+	
 end
 
 function scene:show()

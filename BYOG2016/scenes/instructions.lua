@@ -17,18 +17,19 @@ end
 
 function scene:create()
 	mainGroup.x, mainGroup.y = 0, 0
-	local background = display.newImageRect("res/bg.png",2016, 1136)
-	background.x, background.y = display.contentCenterX, display.contentCenterY
-
+	display.setDefault("background", 0,0,0)
 	
+	local learn = display.newImageRect("res/learn.png", 2016, 1136)
+	learn.x, learn.y = display.contentCenterX, display.contentCenterY
+			
 	backBtn = widget.newButton({
-					x = display.contentCenterX,
-					y = display.contentCenterY * 0.5,
-					width = 123,
-					height = 63,
-					defaultFile = "box.png",
-					overFile = "box.png",
-					label = "back",
+					x = -400,
+					y = 100,
+					width = 400,
+					height = 160,
+					defaultFile = "res/buttons/backBtn.png",
+					overFile = "res/buttons/backBtn.png",
+					label = "",
 					onEvent = btnCallback
 				})
 	backBtn.carta = "back"
@@ -45,8 +46,8 @@ function scene:create()
 	local text = display.newText( textDetails )
 	text:setFillColor( 1, 0, 0 )
 
-	mainGroup:insert(background)
 	mainGroup:insert(text)
+	mainGroup:insert(learn)
 	mainGroup:insert(backBtn)
 
 end

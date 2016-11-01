@@ -1,19 +1,22 @@
 local _M = {}
 local objectGroup 
 local group_mt = { __index = _M}
-local xDirection = {}
-local yDirection = {}
+local xDirection
+local yDirection
 local xVel, yVel = 500, 500
-local initXDir = {}
-local initYDir = {}
+local initXDir
+local initYDir
 local groupX, groupY
-local characters = {}
+local characters
 local bombInstance
 local initX = {}
 local initY = {}
 local charCount
 local killCount
-local isPaused 
+local isPaused
+local disabledButtonCount
+local bgMusic, channel
+_M.disabledButtons = {}
 
 local levelData = require("classes.levelData")
 local composer = require("composer")
@@ -22,7 +25,7 @@ physics.start()
 --physics.setDrawMode("hybrid")
 
 local characterSize ={width = 100,height = 100,numFrames = 12}
-local bombSize={width = 100,height = 100,numFrames = 3}
+local bombSize={width = 100,height = 100,numFrames = 8}
 
 local characterSequences = {
 {name = "down",start = 1,count = 3,time = 500},
@@ -30,8 +33,9 @@ local characterSequences = {
 {name = "right",start = 7,count = 3,time = 500},
 {name = "up",start = 10,count = 3,time = 500}
 }
+
 local bombSequences = {
-{name = "blink",start = 1,count = 3,time = 500},
+{name = "blink",start = 1,count = 8,time = 500}
 }
 
 local function createCharacter(index, pos, xDir, yDir)
@@ -59,11 +63,13 @@ local function createCharacter(index, pos, xDir, yDir)
 	physics.addBody(charInstance, "kinematic",{density=1.0, friction=0.3, bounce=0.2, box = offsetRectParams})
 	
 	objectGroup:insert(charInstance)
+	_M.disabledButtons[disabledButtonCount] = pos
+	disabledButtonCount = disabledButtonCount + 1
+		
 	characters[charCount] = charInstance
 	xDirection[charCount], yDirection[charCount] = xDir, yDir
 	initXDir[charCount], initYDir[charCount] = xDir, yDir
 	initX[charCount], initY[charCount] = charInstance.x, charInstance.y
-	
 	charCount = charCount + 1
 end
 
@@ -71,7 +77,7 @@ local function createBomb(pos)
 	local x = ((tonumber(pos:sub(1,2) - 1)) * 100) - 750
 	local y = ((tonumber(pos:sub(3,4) - 1)) * 100) - 400
 	
-	local sheet = graphics.newImageSheet( "res/bomb_sheet.png", bombSize )
+	local sheet = graphics.newImageSheet( "res/phone_sheet.png", bombSize )
 	bombInstance = display.newSprite(sheet, bombSequences)
 	bombInstance.x, bombInstance.y = x, y
 	bombInstance.myName = "bomb"
@@ -81,6 +87,9 @@ local function createBomb(pos)
 	physics.addBody(bombInstance, "static",{density=1.0, friction=0.3, bounce=0.2, box = offsetRectParams})
 	
 	objectGroup:insert(bombInstance)
+	_M.disabledButtons[disabledButtonCount] = pos
+	disabledButtonCount = disabledButtonCount + 1
+
 end
 
 local function createElement(index, pos)
@@ -88,9 +97,10 @@ local function createElement(index, pos)
 	if(width == 0)then
 		width = 3
 	end
-	
-	local x = ((tonumber(pos:sub(1,2) - 1)) * 100) - 750
-	local y = ((tonumber(pos:sub(3,4) - 1)) * 100) - 400
+	local gridX, gridY = tonumber(pos:sub(1,2)), tonumber(pos:sub(3,4))
+	local tempX, tempY = gridX, gridY
+	local x = ((gridX - 1) * 100) - 750
+	local y = ((gridY - 1) * 100) - 400
 	
 	local minX, minY = x - 50 , y - 50
 	local maxX, maxY = x + (100 * (width - 0.5)), y + (100 * (height - 0.5))
@@ -101,7 +111,17 @@ local function createElement(index, pos)
 	
 	objectGroup:insert(element)
 	
-	local offsetRectParams = { halfWidth = width*0.5, halfHeight = height * 0.5, x=objectGroup.x, y=objectGroup.y}
+	for i =1, width, 1 do
+		for j = 1, height, 1 do
+			_M.disabledButtons[disabledButtonCount] = string.format("%02d%02d", tempX, tempY)
+			disabledButtonCount = disabledButtonCount + 1
+			tempY = tempY + 1
+		end
+		tempX = tempX + 1
+		tempY = gridY
+	end
+
+	local offsetRectParams = { halfWidth = width*50, halfHeight = height * 50, x=objectGroup.x, y=objectGroup.y}
 	physics.addBody(element, "static",{density=1.0, friction=0.3, bounce=0.2, box = offsetRectParams})
 end
 
@@ -135,15 +155,30 @@ function _M:reset()
 end
 
 local function boundingBox(rect1X, rect1Y, rect1Width, rect1Height, rect2X, rect2Y, rect2Width, rect2Height)
-	rect1X, rect2X = rect1X + 750, rect2X + 750
-	rect1Y, rect2Y = rect1Y + 400, rect2Y + 400
-	local xCollision = ((rect1X+(rect1Width*0.5)) - (rect2X + (rect2Width * 0.5))) < 0
-	local yCollision = ((rect1Y+(rect1Height*0.5)) - (rect2Y + (rect2Height * 0.5))) < 0 
-	if(xCollision and yCollision)then
-	return 1
-	else return 0
-	end
+	local obj1 = display.newRect(rect1X, rect1Y, rect1Width,rect1Height)
+	objectGroup:insert(obj1) 
+	obj1.alpha = 0.0
+	local obj2 = display.newRect(rect2X, rect2Y, rect2Width,rect2Height)
+	objectGroup:insert(obj2) 
+	obj2.alpha = 0.0
+	
+	local left = obj1.contentBounds.xMin <= obj2.contentBounds.xMin and obj1.contentBounds.xMax >= obj2.contentBounds.xMin
+    local right = obj1.contentBounds.xMin >= obj2.contentBounds.xMin and obj1.contentBounds.xMin <= obj2.contentBounds.xMax
+    local up = obj1.contentBounds.yMin <= obj2.contentBounds.yMin and obj1.contentBounds.yMax >= obj2.contentBounds.yMin
+    local down = obj1.contentBounds.yMin >= obj2.contentBounds.yMin and obj1.contentBounds.yMin <= obj2.contentBounds.yMax
+ 
+    if(left or right) and (up or down) then return 1
+    else return 0
+    end
+    
 end
+
+local function changeScene( event )
+	composer.gotoScene('scenes.result')
+	composer.removeScene('scenes.game')
+end
+
+
 
 local function update()
 	if(isPaused)then
@@ -154,7 +189,6 @@ local function update()
 		local startX, startY = characters[i].x + groupX, characters[i].y + groupY
 		local endX, endY = (characters[i].x + groupX) + (xDirection[i] * 51), (characters[i].y + groupY) + (yDirection[i]*51)
 		hits = physics.rayCast(startX, startY, endX, endY, "closest" )
-		local ray = display.newLine(startX, startY, endX, endY)
 		if ( hits ) then
 			for i,hit in ipairs( hits ) do
 				if(hit.object.myName == "bomb")then
@@ -162,12 +196,24 @@ local function update()
 					for j = 1, charCount - 1, 1 do
 						characters[j]:setLinearVelocity(0,0)
 						characters[j]:pause()
-						killCount = killCount + boundingBox(characters[j].x, characters[j].y, 100, 100, bombInstance.x, bombInstance.y, 500,500)
+						killCount = killCount + boundingBox(characters[j].x, characters[j].y, 1*100, 1*100, bombInstance.x, bombInstance.y, 5*100,5*100)
 					end
-					
+				
 					levelData.won = killCount == charCount - 1
-					composer.gotoScene('scenes.result')
-					composer.removeScene('scenes.game')
+					
+					local blastSize={width = 120, height = 120,numFrames = 12}
+					local blastSequences = {{name = "blink",start = 1,count = 12,time = 500}}
+					local sheet = graphics.newImageSheet( "res/blast_sheet.png", blastSize )
+					local blastInstance = display.newSprite(sheet, blastSequences)
+					blastInstance.x, blastInstance.y = bombInstance.x, bombInstance.y
+					blastInstance:play()
+					objectGroup:insert(blastInstance)
+					transition.scaleTo( blastInstance, { xScale=4.0, yScale=4.0, time=100} )
+
+					
+					timer.performWithDelay(500, changeScene)
+					Runtime:removeEventListener( "enterFrame", update )
+					return
 				end
 			end
 		
@@ -191,37 +237,170 @@ local function update()
 	end
 end
 
-local function addData(_index)
-	local index = tonumber(_index)
-	if(index == 1)then
-		createElement(1,"0101")
-		createElement(2,"0201")
-		createElement(3,"0401")
-		createElement(4,"0102")
-		createElement(5,"0202")
-		createElement(6,"0402")
-		createElement(7,"0104")
-		createElement(8,"0204")
-		createElement(9,"0404")
-		createCharacter(1, "0809", -1, 0)
-		createCharacter(2, "0609", -1, 0)
-		createBomb("0109")
-	elseif(index == 2)then
-		createCharacter(1,-750,400,100,100,0,-1)
-		createElement(1,-750,-300,100,100)
-		createElement(1,-650,200,100,100)
-		createElement(1,-550,-100,100,100)
-		createElement(1,-450,100,100,100)
-		createElement(1,-350,-200,100,100)
-		createElement(1,-250,300,100,100)
-		createElement(1,-150,200,100,100)
-		createCharacter(2,-450,400,100,100,0,-1)
-		createBomb(-450,0)
+local function addData(index)
+	if(index == "1")then 
+		createCharacter(10,"0305",1,0)
+		createBomb("1405")
+
+		createElement(9,"0502")
+		createElement(9,"0902")
+		createElement(9,"0506")
+		createElement(9,"0906")
+
+	elseif(index == "2")then
+		createCharacter(6,"0803",1,0)
+		createElement(1,"0406")
+		--createElement(1,"0502")
+		createElement(1,"1107")
+		createElement(1,"1203")
+
+		createElement(7,"1204")
+		createElement(1,"1207")
+		createElement(3,"0807")
+		createElement(3,"0507")
+		createElement(1,"0407")
+		createElement(7,"0403")
+		createElement(1,"0402")
+		createElement(3,"0602")
+		createElement(3,"0902")
+		createElement(1,"1202")
+		createBomb("0703")
+
+	elseif(index == "3")then -- keep one 1x1 object
+		createCharacter(1,"0804",1,0)
+		--createElement(1,"1203")
+		--createElement(1,"1107")
+		createElement(9,"1303")
+		createElement(9,"1307")
+		createElement(9,"0207")
+		createElement(9,"0203")
+
+		createElement(5,"1108")
+		createElement(5,"0908")
+		createElement(5,"0708")
+		createElement(5,"0508")
+
+		createElement(5,"1101")
+		createElement(5,"0901")
+		createElement(5,"0701")
+		createElement(5,"0501")
+
+		createElement(1,"0507")
+		createElement(1,"0503")
+		createElement(1,"1203")
+		createBomb("0706")
+
+	elseif(index == "4")then --keep one 2x2 object
+		createCharacter(2,"0806",1,0)
+
+		createElement(5,"0104")
+		createElement(3,"0305")
+		createElement(3,"0605")
+		createElement(3,"0905")
+		createElement(3,"1205")
+
+		createElement(5,"0107")
+		createElement(3,"0307")
+		createElement(3,"0607")
+		createElement(3,"0907")
+		createElement(3,"1207")
+
+		createElement(1,"1606")
+
+		createBomb("0106")
+
+	elseif(index == "5")then --keep two 2x2 objects
+		createCharacter(9, "0608", 0, -1)
+		createCharacter(3, "1202", 0, 1)
+		createElement(6,"0806")
+		createElement(6,"0803")
+		createBomb("0905")
+		--createElement(1,"0704")
+
+		createElement(3,"0609")
+		createElement(3,"1009")
+		createElement(3,"0601")
+		createElement(3,"1001")
+		createElement(7,"0502")
+		createElement(7,"0506")
+		createElement(7,"1302")
+		createElement(7,"1306")
+	
+	
+	elseif(index == "6")then --keep two 1x1 objects
+		createCharacter(2,"0205",0,1)
+		createCharacter(3,"1003",1,0)
+		
+		createElement(1,"0209")
+		createElement(1,"0204")
+
+		createElement(1,"1503")
+		createElement(1,"1408")
+		createElement(1,"0907")
+		createElement(1,"1002")
+
+		createBomb("1205")
+
+	elseif(index == "7")then
+		createCharacter(8,"0503",1,0)
+		createCharacter(2,"1207",0,-1)
+		createElement(1,"1201")
+		createElement(1,"1402")
+		createElement(1,"1105")
+
+		createElement(1,"0502")
+		createElement(1,"0803")
+		createElement(1,"0706")
+		createElement(1,"0405")
+
+		createElement(3,"0602")
+		createBomb("0604")
+
+	elseif(index == "8")then
+		createCharacter(6,"0504",1,0)
+		createCharacter(1,"0908",0,-1)
+		createCharacter(9,"1104",0,1)
+
+		createElement(1,"0506")
+		createElement(1,"0603")
+
+		createElement(5,"0903")
+		createElement(1,"0807")
+		createElement(3,"1008")
+		createElement(1,"1205")
+
+		createBomb("1006")
+
+	elseif(index == "9")then
+		createCharacter(5,"0101",1,0)
+		createCharacter(7,"0305",1,0)
+		createCharacter(3,"1305",-1,0)
+		createCharacter(4,"1509",-1,0)
+
+		createElement(1,"0506")
+		createElement(1,"0607")
+		createElement(1,"0603")
+		createElement(1,"1003")
+		createElement(1,"1007")
+		createElement(1,"1104")
+
+		createBomb("0805")
 	end
 
 end
 
+
 function _M.new(index)
+	characters = {}
+	xDirection = {}
+	yDirection = {}
+	initXDir = {}
+	initYDir = {}
+	_M.disabledButtons = {}
+	disabledButtonCount = 1
+
+	bgMusic = audio.loadStream( "res/bgMusic.mp3" )
+	channel = audio.play( bgMusic, { channel=1, loops=-1, fadein=5000 } )
 	objectGroup = display.newGroup()
 	charCount = 1
 	killCount = 0
@@ -239,19 +418,14 @@ function _M.new(index)
 	return setmetatable(_M, group_mt)
 end
 
-function _M.getDisableButtons(_index)
-	local index = tostring(_index)
-	if(index == "1")then
-		return {"0906", "0907", "1308", "1006", "0706"}
-	elseif(index == "2")then
-		return {"0101"}
-	end
+function _M.getDisableButtons(index)
+	return _M.disabledButtons
 end
 
 function _M.removeSelf()
 	Runtime:removeEventListener( "enterFrame", update )
+	audio.stop(channel)
 	objectGroup:removeSelf()
-	--objectGroup = nil
 end
 
 return _M

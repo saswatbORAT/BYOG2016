@@ -10,7 +10,7 @@ local nextBtn, restartBtn, menuBtn, resultText
 local function btnCallback(event)
 	if(event.phase == "ended")then
 		if(event.target.carta == "next")then
-		levelData.index = (tonumber(levelData.index) + 1)
+		levelData.index = (levelData.index + 1)
 		composer.gotoScene('scenes.game')
 		composer.removeScene('scenes.result')
 		elseif(event.target.carta == "restart")then
@@ -25,66 +25,73 @@ end
 
 function scene:create()
 	mainGroup.x, mainGroup.y = 0, 0
-	local background = display.newImageRect("res/bg.png",2016, 1136)
-	background.x, background.y = display.contentCenterX, display.contentCenterY
-
 	
+	display.setDefault("background", 0,0,0)
+		
 	nextBtn = widget.newButton({
 					x = display.contentCenterX,
-					y = display.contentCenterY * 0.5,
-					width = 123,
-					height = 63,
-					defaultFile = "box.png",
-					overFile = "box.png",
-					label = "next",
+					y = 500,
+					width = 400,
+					height = 160,
+					defaultFile = "res/buttons/nextBtn.png",
+					overFile = "res/buttons/nextBtn.png",
+					label = "",
 					onEvent = btnCallback
 				})
 	nextBtn.carta = "next"
 	
 	menuBtn = widget.newButton({
 					x = display.contentCenterX,
-					y = display.contentCenterY * 1.5,
-					width = 123,
-					height = 63,
-					defaultFile = "box.png",
-					overFile = "box.png",
-					label = "menu",
+					y = 900,
+					width = 400,
+					height = 160,
+					defaultFile = "res/buttons/menuBtn.png",
+					overFile = "res/buttons/menuBtn.png",
+					label = "",
 					onEvent = btnCallback
 				})
 	menuBtn.carta = "menu"
 	
 	restartBtn = widget.newButton({
 					x = display.contentCenterX,
-					y = display.contentCenterY,
-					width = 123,
-					height = 63,
-					defaultFile = "box.png",
-					overFile = "box.png",
-					label = "restart",
+					y = 700,
+					width = 400,
+					height = 160,
+					defaultFile = "res/buttons/restartBtn.png",
+					overFile = "res/buttons/restartBtn.png",
+					label = "",
 					onEvent = btnCallback
 				})
 	restartBtn.carta = "restart"
 	
+	if(levelData.index == "9" or levelData.index == 9)then
+		nextBtn.alpha = 0
+	end
+	
 	local _text
 	if(levelData.won)then
-		_text = "Level Complete"
+		_text = "  You successfully killed \nall the characters!"
 	else
-		_text = "Level Failed"
+		_text = "  You failed to kill \n    all the characters!"
 	end
 	
 	local textDetails = 
 	{
     	text = _text,
-    	x = 500,
-    	y = 500,
-    	width = 120,     --required for multi-line and alignment
-    	font = native.systemFont,
-    	fontSize = 40
+    	x = display.contentCenterX,
+    	y = 400,
+    	width = 1200,
+    	height = 400,     --required for multi-line and alignment
+    	font = "res/8bit.TTF",
+    	fontSize = 50
 	}
 	local text = display.newText( textDetails )
+	if(levelData.won)then
+	text:setFillColor( 0, 1, 0 )
+	else
 	text:setFillColor( 1, 0, 0 )
+	end
 	
-	mainGroup:insert(background)	
 	mainGroup:insert(text)
 	mainGroup:insert(nextBtn)
 	mainGroup:insert(menuBtn)
