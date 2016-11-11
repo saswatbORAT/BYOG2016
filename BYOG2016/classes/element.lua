@@ -1,7 +1,7 @@
 local _M = {}
 
 function _M.new(index, x, y, width, height)
-	local element = display.newImageRect("res/elements/"..index..".png", width, height)
+	local element = display.newImageRect("res/Highlight/"..index..".png", width, height)
 	element.x = x
 	element.y = y
 

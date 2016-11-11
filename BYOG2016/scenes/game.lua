@@ -17,16 +17,16 @@ local gridWidth, gridHeight = btnWidth * totalColumns, btnHeight * totalRows
 local constX, constY = btnWidth * 0.5,btnHeight * 0.5
 local startPosX, startPosY = constX, constY
 local x, y = 0, 0
-local gridX, gridY = 0,0
+local gridX, gridY = -1, -1
 local blocks
 local btnsGroup = display.newGroup()
 local element = require("classes.element")
 local elementGroup = display.newGroup()
 local level = require("levels.level")
 local currentLevel
-local scrollView, scroll_bg, playImg, recImg, scroll_btns, scroll_btn_back
+local scrollView, scroll_bg, playImg, recImg, scroll_btns, scroll_text--, scroll_btn_back
 local playBtn, backBtn, upBody, downBody, leftBody, rightBody
-local limit = {}
+local limit
 
 
 local function addBoundary()
@@ -66,13 +66,17 @@ local function removeImg(event)
 
 		local index =  tonumber(event.target.myName:sub(event.target.myName:len()))
 		limit[index] = limit[index] + 1
-		scroll_btns[index]:setLabel(tostring(limit[index]))
+		scroll_text[index].text = tostring(limit[index].."x")
 	end
 end
 
 local function handleButtonEvent( event)
     if ( "ended" == event.phase and scrollView.alpha >= 0.5) then
     	local btnIndex = (gridY*3) + (gridX + 1)
+    	if(btnIndex < 0)then
+    		return
+    	end
+    	
     	if(limit[btnIndex] <= 0)then
     		return
     	end
@@ -107,7 +111,7 @@ local function handleButtonEvent( event)
 		ele:addEventListener("tap", removeImg)
 		elementGroup:insert(ele)
 		limit[btnIndex] = limit[btnIndex] - 1
-		scroll_btns[btnIndex]:setLabel(tostring(limit[btnIndex]))
+		scroll_text[btnIndex].text = tostring(limit[btnIndex].."x")
     end
 end
 
@@ -160,7 +164,11 @@ end
 
 local function elementBtnCallback(event)
 	if(event.phase == "ended")then
-		scroll_btn_back.x, scroll_btn_back.y = scroll_btns[tonumber(event.target.carta)].x, scroll_btns[tonumber(event.target.carta)].y
+		for i = 1, #scroll_btns, 1 do
+			scroll_btns[i]:setFillColor(1.0,1.0,1.0)
+		end
+		event.target:setFillColor(0.5,0.5,0.5)
+	--	scroll_btn_back.x, scroll_btn_back.y = scroll_btns[tonumber(event.target.carta)].x, scroll_btns[tonumber(event.target.carta)].y
 		
 		if(event.target.carta == "1")then
 			gridX, gridY = 0, 0
@@ -184,57 +192,237 @@ local function elementBtnCallback(event)
 	end
 end
 
-local elementYPos = 100
+local elementYPos = 120
 local function getButton(index, _limit)
 	local btn = widget.newButton({
-					x = 100,
+					x = 90,
 					y = elementYPos,
 					width = 150,
 					height = 150,
 					defaultFile = "res/icon/"..index..".png",
 					overFile = "res/icon/"..index..".png",
-					label = _limit,
+				--[[	label = _limit,
 					fontSize = 100,
-					font = "res/8bit.TTF",
-					labelColor = {default = {1,1,0}, over = {1, 0.5, 0}},
+					font = "res/arial.ttf",
+					labelColor = {default = {1,1,0}, over = {1, 0.5, 0}},]]--
 					onEvent = elementBtnCallback
 			})
 	elementYPos = elementYPos + 300
 	btn.carta = index
+	
+	local text = display.newImageRect("res/icon/Text.png", 76, 76)
+	text.x, text.y = 20, 0
+	btn:insert(text)
+	
+	local myText = display.newText(tostring(_limit).."x",76, 76,"res/arial.ttf",50)
+	myText.x, myText.y = 20, 0
+	btn:insert(myText)
+	
+	scroll_text[tonumber(index)] = myText 
+	
 	scroll_btns[tonumber(index)] = btn
 	limit[tonumber(index)] = _limit
 	scrollView:insert(btn)
+	
+	if(_limit == 0) then
+		btn.alpha = 0
+	end
 end
 
 local function addElementButtons(index)
 	if(index == "1")then
 		getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
 	elseif(index == "2")then
-		getButton("1",1)
+		getButton("4",1)
+		getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		--getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
 	elseif(index == "3")then
-		getButton("1",2)
+		getButton("1",1)
+	--	getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
 	elseif(index == "4")then
 		getButton("5",1)
+		getButton("6",1)
+		getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+	--	getButton("5", 0)
+	--	getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
 		gridX, gridY = 1,1 
 	elseif(index == "5")then
-		getButton("5",2)
+		getButton("5",1)
+		getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+-- 		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
 		gridX, gridY = 1,1 
 	elseif(index == "6")then
 		getButton("1",1)
+--		getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
 	elseif(index == "7")then
-		getButton("1",1)
-		getButton("5",1)
+		getButton("2",2)
+			getButton("1", 0)
+-- 		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
 	elseif(index == "8")then
-		getButton("3",1)
-		getButton("7",1)
+		getButton("5",2)	
+		
+		getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+	--	getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
 		gridX, gridY = 2,0 
 	elseif(index == "9")then
+		getButton("1",1)
+--			getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
+	elseif(index == "10")then
+		getButton("5",1)
+			getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+--		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
+	elseif(index == "11")then
+		getButton("3",1)
+		getButton("7",1)
+			getButton("1", 0)
+		getButton("2", 0)
+	--	getButton("3", 0)
+		getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+--		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
+	elseif(index == "12")then
+		getButton("4",2)
 		getButton("1",2)
-		getButton("4",2)		
+	--		getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+--		getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
+	elseif(index == "13")then
+		getButton("5",1)
+		getButton("7",1)
+			getButton("1", 0)
+		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+	--	getButton("5", 0)
+		getButton("6", 0)
+--		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+		
+	elseif(index == "14")then
+		getButton("2",1)
+		getButton("5",1)
+			getButton("1", 0)
+--		getButton("2", 0)
+		getButton("3", 0)
+		getButton("4", 0)
+--		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+		getButton("9", 0)
+				
+	elseif(index == "15")then
+		getButton("9",1)
+		getButton("3",1)
+			getButton("1", 0)
+		getButton("2", 0)
+--		getButton("3", 0)
+		getButton("4", 0)
+		getButton("5", 0)
+		getButton("6", 0)
+		getButton("7", 0)
+		getButton("8", 0)
+--		getButton("9", 0)
+		
 	end
 end
 
-local recSize ={width = 200,height = 100,numFrames = 2}
+local recSize ={width = 182,height = 183,numFrames = 2}
 local recSequences = {
 {name = "blink",start = 1,count = 2,time = 1000}
 }
@@ -243,6 +431,7 @@ function scene:create()
 	limit = {}
 	blocks = {}
 	scroll_btns = {}
+	scroll_text = {}
 	mainGroup:insert(elementGroup)
 	
 	gridGroup.x, gridGroup.y = display.contentCenterX - gridWidth * 0.5, display.contentCenterY - gridHeight * 0.5
@@ -261,35 +450,35 @@ function scene:create()
 		blocks[x][y].alpha = 0.01
 	end
 	
-	playBtn = widget.newButton({x = -580,y = 760,width = 200,height = 100,defaultFile = "box.png",overFile = "box.png",label = "",onEvent = playGame})
+	playBtn = widget.newButton({x = -580,y = 540,width = 182,height = 183,defaultFile = "box.png",overFile = "box.png",label = "",onEvent = playGame})
 	playBtn.carta = "play"
 	playBtn.alpha = 0.1
 
-	backBtn = widget.newButton({x = -620,y = 250,width = 100,height = 50,defaultFile = "res/backButton.png",overFile = "res/backButton.png",label = "",onEvent = playGame})
+	backBtn = widget.newButton({x = -580,y = 250,width = 120,height = 180,defaultFile = "res/backButton.png",overFile = "res/backButton.png",label = "",onEvent = playGame})
 	backBtn.carta = "back"
 	
-	playImg = display.newImageRect("res/playImage.png", 200, 100)
-	playImg.x, playImg.y = -580, 760
+	playImg = display.newImageRect("res/playImage.png", 182, 183)
+	playImg.x, playImg.y = -580, 540
 	elementGroup:insert(playImg)
 	
 	local sheet = graphics.newImageSheet( "res/recImage.png", recSize )
 	recImg = display.newSprite(sheet, recSequences)
-	recImg.x, recImg.y = -580, 760
+	recImg.x, recImg.y = -580, 540
 	elementGroup:insert(recImg)
 	recImg:play()
 	recImg.alpha = 0.0
 	
-	scroll_btn_back = display.newImageRect( "res/btn.png", 200, 200 )
+--[[	scroll_btn_back = display.newImageRect( "res/btn.png", 200, 200 )
 	scroll_btn_back.x, scroll_btn_back.y = 100, 100
-	scrollView:insert(1,scroll_btn_back)
+	scrollView:insert(1,scroll_btn_back)]]--
 end
 
 scrollView = widget.newScrollView(
     {
         x = display.contentWidth * 1.92,
-        y = display.contentHeight * 0.46,
+        y = display.contentHeight * 0.49,
         width = 200,
-        height = 780,
+        height = 860,
         scrollWidth = 200,
         scrollHeight = 3000,
         listener = scrollListener,

@@ -27,52 +27,56 @@ function scene:create()
 	mainGroup.x, mainGroup.y = 0, 0
 	
 	display.setDefault("background", 0,0,0)
+	
+	local bg = display.newImage("res/MainMenu/bg.png", 2016, 1136)
+	bg.x , bg.y =  display.contentCenterX, display.contentCenterY
+	mainGroup:insert(bg)
 		
 	nextBtn = widget.newButton({
 					x = display.contentCenterX,
-					y = 500,
-					width = 400,
-					height = 160,
-					defaultFile = "res/buttons/nextBtn.png",
-					overFile = "res/buttons/nextBtn.png",
+					y = 900,
+					width = 264,
+					height = 382,
+					defaultFile = "res/over/next.png",
+					overFile = "res/over/next.png",
 					label = "",
 					onEvent = btnCallback
 				})
 	nextBtn.carta = "next"
 	
 	menuBtn = widget.newButton({
-					x = display.contentCenterX,
+					x = 0,
 					y = 900,
-					width = 400,
-					height = 160,
-					defaultFile = "res/buttons/menuBtn.png",
-					overFile = "res/buttons/menuBtn.png",
+					width = 256,
+					height = 334,
+					defaultFile = "res/over/Menu.png",
+					overFile = "res/over/Menu.png",
 					label = "",
 					onEvent = btnCallback
 				})
 	menuBtn.carta = "menu"
 	
 	restartBtn = widget.newButton({
-					x = display.contentCenterX,
-					y = 700,
-					width = 400,
-					height = 160,
-					defaultFile = "res/buttons/restartBtn.png",
-					overFile = "res/buttons/restartBtn.png",
+					x = 650,
+					y = 900,
+					width = 256,
+					height = 334,
+					defaultFile = "res/over/retry.png",
+					overFile = "res/over/retry.png",
 					label = "",
 					onEvent = btnCallback
 				})
 	restartBtn.carta = "restart"
 	
-	if(levelData.index == "9" or levelData.index == 9)then
+	if(levelData.index == "14" or levelData.index == 14)then
 		nextBtn.alpha = 0
 	end
 	
 	local _text
 	if(levelData.won)then
-		_text = "  You successfully killed \nall the characters!"
+		_text = "Level Complete!"
 	else
-		_text = "  You failed to kill \n    all the characters!"
+		_text = "Level Failed!"
 	end
 	
 	local textDetails = 
@@ -82,15 +86,16 @@ function scene:create()
     	y = 400,
     	width = 1200,
     	height = 400,     --required for multi-line and alignment
-    	font = "res/8bit.TTF",
-    	fontSize = 50
+    	font = "res/arial.ttf",
+    	fontSize = 150,
+    	align = "center"
 	}
 	local text = display.newText( textDetails )
-	if(levelData.won)then
+--[[	if(levelData.won)then
 	text:setFillColor( 0, 1, 0 )
 	else
 	text:setFillColor( 1, 0, 0 )
-	end
+	end]]--
 	
 	mainGroup:insert(text)
 	mainGroup:insert(nextBtn)

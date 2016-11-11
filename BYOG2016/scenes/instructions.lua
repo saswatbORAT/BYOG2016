@@ -23,12 +23,12 @@ function scene:create()
 	learn.x, learn.y = display.contentCenterX, display.contentCenterY
 			
 	backBtn = widget.newButton({
-					x = -400,
+					x = -550,
 					y = 100,
-					width = 400,
-					height = 160,
-					defaultFile = "res/buttons/backBtn.png",
-					overFile = "res/buttons/backBtn.png",
+					width = 120,
+					height = 180,
+					defaultFile = "res/backButton.png",
+					overFile = "res/backButton.png",
 					label = "",
 					onEvent = btnCallback
 				})

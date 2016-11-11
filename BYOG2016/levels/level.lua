@@ -106,7 +106,7 @@ local function createElement(index, pos)
 	local maxX, maxY = x + (100 * (width - 0.5)), y + (100 * (height - 0.5))
 	x,y = (maxX + minX) * 0.5, (maxY + minY) * 0.5
 	
-	local element = display.newImageRect("res/elements/"..index..".png", width * 100, height * 100)
+	local element = display.newImageRect("res/Objects/"..index..".png", width * 100, height * 100)
 	element.x, element.y = x, y
 	
 	objectGroup:insert(element)
@@ -197,6 +197,7 @@ local function update()
 						characters[j]:setLinearVelocity(0,0)
 						characters[j]:pause()
 						killCount = killCount + boundingBox(characters[j].x, characters[j].y, 1*100, 1*100, bombInstance.x, bombInstance.y, 5*100,5*100)
+					
 					end
 				
 					levelData.won = killCount == charCount - 1
@@ -208,10 +209,10 @@ local function update()
 					blastInstance.x, blastInstance.y = bombInstance.x, bombInstance.y
 					blastInstance:play()
 					objectGroup:insert(blastInstance)
-					transition.scaleTo( blastInstance, { xScale=4.0, yScale=4.0, time=100} )
+					transition.scaleTo( blastInstance, { xScale=6.0, yScale=6.0, time=100} )
 
 					
-					timer.performWithDelay(500, changeScene)
+					timer.performWithDelay(400, changeScene)
 					Runtime:removeEventListener( "enterFrame", update )
 					return
 				end
@@ -239,16 +240,59 @@ end
 
 local function addData(index)
 	if(index == "1")then 
-		createCharacter(10,"0305",1,0)
-		createBomb("1405")
+		createCharacter(10,"0202",1,0)
+		createBomb("0805")
+		
+		createElement(3,"0203")
+		createElement(3,"0503")
+		createElement(3,"1003")
+		createElement(3,"1006")
+		createElement(4,"0903")
+		createElement(4,"0905")	
+		createElement(4,"1303")
+		createElement(4,"1305")
+		createElement(4,"0704")
+		createElement(4,"0706")
+		createElement(7,"1502")
+		createElement(7,"1505")
+		createElement(3,"1308")
+		createElement(3,"1008")
+		createElement(3,"0708")
+		createElement(7,"0101")
+		createElement(3,"0201")
+		createElement(3,"0501")
+		createElement(3,"0801")
+		createElement(3,"1101")
+		createElement(3,"1401")
 
-		createElement(9,"0502")
-		createElement(9,"0902")
-		createElement(9,"0506")
-		createElement(9,"0906")
+	elseif(index == "2")then 
+		createCharacter(10,"0202",1,0)
+		createBomb("0805")
+		
+		createElement(3,"0203")
+		createElement(3,"0503")
+		createElement(3,"1003")
+		createElement(3,"1006")
+		createElement(4,"0903")
+		createElement(4,"0905")	
+		createElement(4,"1303")
+		createElement(4,"1305")
+		createElement(4,"0704")
+		--createElement(4,"0706")
+		createElement(7,"1502")
+		createElement(7,"1505")
+		createElement(3,"1308")
+		createElement(3,"1008")
+		createElement(3,"0708")
+		createElement(7,"0101")
+		createElement(3,"0201")
+		createElement(3,"0501")
+		createElement(3,"0801")
+		createElement(3,"1101")
+		createElement(3,"1401")	
 
-	elseif(index == "2")then
-		createCharacter(6,"0803",1,0)
+	elseif(index == "3")then
+		createCharacter(6,"0503",1,0)
 		createElement(1,"0406")
 		--createElement(1,"0502")
 		createElement(1,"1107")
@@ -261,12 +305,31 @@ local function addData(index)
 		createElement(1,"0407")
 		createElement(7,"0403")
 		createElement(1,"0402")
+		createElement(1,"0502")
 		createElement(3,"0602")
 		createElement(3,"0902")
 		createElement(1,"1202")
-		createBomb("0703")
+		createBomb("0805")
 
-	elseif(index == "3")then -- keep one 1x1 object
+	elseif(index == "4")then
+		createCharacter(1,"1509",-1,0)
+	
+		createBomb("1205")
+		--createElement(7,"1605")
+		createElement(6,"1307")
+		createElement(6,"0907")
+		createElement(5,"0202")
+		createElement(5,"0502")
+		createElement(5,"0205")
+		createElement(5,"0505")
+		createElement(5,"0208")
+		createElement(1,"1105")
+		createElement(1,"1305")
+		createElement(6,"0702")
+		createElement(1,"0404")
+		createElement(1,"0407")
+		
+	elseif(index == "5")then -- keep one 1x1 object
 		createCharacter(1,"0804",1,0)
 		--createElement(1,"1203")
 		--createElement(1,"1107")
@@ -290,44 +353,67 @@ local function addData(index)
 		createElement(1,"1203")
 		createBomb("0706")
 
-	elseif(index == "4")then --keep one 2x2 object
-		createCharacter(2,"0806",1,0)
 
-		createElement(5,"0104")
-		createElement(3,"0305")
-		createElement(3,"0605")
-		createElement(3,"0905")
-		createElement(3,"1205")
-
-		createElement(5,"0107")
-		createElement(3,"0307")
-		createElement(3,"0607")
-		createElement(3,"0907")
-		createElement(3,"1207")
-
-		createElement(1,"1606")
-
-		createBomb("0106")
-
-	elseif(index == "5")then --keep two 2x2 objects
-		createCharacter(9, "0608", 0, -1)
-		createCharacter(3, "1202", 0, 1)
+		
+	elseif(index == "6")then --keep one 2x2 object
+		createCharacter(2,"0401",0,1)
+		createElement(3,"0309")
+		--createElement(5,"0101")
+		createElement(7,"0202")
+		createElement(7,"0205")
+		createElement(7,"1202")
+		createElement(7,"1205")
+		createElement(7,"1002")
+		createElement(7,"1005")
+		createElement(1,"1201")
+		createElement(1,"1001")
+		createElement(7,"1402")
+		createElement(7,"1405")
+		createElement(7,"1602")
+		createElement(7,"1605")
+		createElement(1,"1401")
+		createElement(1,"1601")
+		createElement(7,"0802")
+		createElement(7,"0805")
+		createElement(7,"0602")
+		createElement(7,"0605")
+		createElement(1,"0801")
+		createElement(1,"0601")
+		--createElement(4,"1507")
+		createBomb("0109")
+	
+	elseif(index == "7")then --keep two 2x2 objects
+		createCharacter(9, "0302", 1, 0)
+		createCharacter(3, "1308", -1, 0)
+		--createElement()
+		--createElement(7,"1407")
+		createElement(3,"0603")
+		createElement(7,"0604")
+		createElement(3,"0807")
+		createElement(7,"1004")
+		--createElement(3,"1104")
+		createElement(4,"0607")
+		createElement(4,"1002")
+		createBomb("0805")
+	
+	elseif(index == "8")then --keep two 2x2 objects
+		createCharacter(9, "0508", 0, -1)
+		createCharacter(3, "1302", 0, 1)
 		createElement(6,"0806")
 		createElement(6,"0803")
 		createBomb("0905")
 		--createElement(1,"0704")
 
-		createElement(3,"0609")
-		createElement(3,"1009")
-		createElement(3,"0601")
-		createElement(3,"1001")
-		createElement(7,"0502")
-		createElement(7,"0506")
-		createElement(7,"1302")
-		createElement(7,"1306")
-	
-	
-	elseif(index == "6")then --keep two 1x1 objects
+		createElement(3,"0509")
+		createElement(3,"1109")
+		createElement(3,"0501")
+		createElement(3,"1101")
+		createElement(7,"0402")
+		createElement(7,"0406")
+		createElement(7,"1402")
+		createElement(7,"1406")
+		
+	elseif(index == "9")then --keep two 1x1 objects
 		createCharacter(2,"0205",0,1)
 		createCharacter(3,"1003",1,0)
 		
@@ -341,22 +427,25 @@ local function addData(index)
 
 		createBomb("1205")
 
-	elseif(index == "7")then
+	elseif(index == "10")then
 		createCharacter(8,"0503",1,0)
 		createCharacter(2,"1207",0,-1)
 		createElement(1,"1201")
 		createElement(1,"1402")
-		createElement(1,"1105")
+	--	createElement(1,"1105")
+		createElement(2,"0905")
+		createElement(2,"1006")
 
 		createElement(1,"0502")
 		createElement(1,"0803")
 		createElement(1,"0706")
 		createElement(1,"0405")
 
-		createElement(3,"0602")
+		createElement(6,"0601")
 		createBomb("0604")
+		createElement(9,"1304")
 
-	elseif(index == "8")then
+	elseif(index == "11")then
 		createCharacter(6,"0504",1,0)
 		createCharacter(1,"0908",0,-1)
 		createCharacter(9,"1104",0,1)
@@ -371,7 +460,7 @@ local function addData(index)
 
 		createBomb("1006")
 
-	elseif(index == "9")then
+	elseif(index == "12")then
 		createCharacter(5,"0101",1,0)
 		createCharacter(7,"0305",1,0)
 		createCharacter(3,"1305",-1,0)
@@ -385,6 +474,55 @@ local function addData(index)
 		createElement(1,"1104")
 
 		createBomb("0805")
+	
+	elseif(index == "13")then
+		createCharacter(7,"1107",0,-1)
+		createCharacter(4,"0803",0,1)
+		createElement(1,"1405")
+		createElement(1,"1308")
+		createElement(1,"1007")
+		createElement(1,"1104")
+		
+		createElement(7,"0903")
+		createElement(7,"0703")
+		
+		createElement(6,"0701")
+		createElement(6,"0707")
+		--createElement(2,"0106")
+		createElement(9,"0202")
+		createElement(9,"0207")
+		createBomb("1206")
+	elseif(index == "14")then
+	
+		createCharacter(6,"0202",1,0)
+		createCharacter(2,"1104",-1,0)
+		createElement(3,"0201")
+		createElement(1,"0305")
+		createElement(1,"0206")
+		createElement(9,"0507")
+		createElement(4,"0702")
+		createElement(2,"0704")
+		createElement(8,"1105")
+		createElement(1,"0901")
+		createElement(1,"1202")
+		
+		createBomb("1003")
+		
+	
+	elseif(index == "15")then
+	
+		createCharacter(8,"1207",0,-1)
+		createCharacter(5,"0608",-1,0)
+		createElement(1,"1202	")
+		createElement(5,"1304")
+		createElement(1,"1403")
+		createElement(7,"0306")
+		createElement(2,"0305")
+		createElement(7,"0706")
+		createElement(2,"0609")
+		createElement(2,"0501")
+		createBomb("0507")
+	
 	end
 
 end
@@ -410,9 +548,9 @@ function _M.new(index)
 	isPaused = true
 
 			
-	local plants = display.newImageRect("res/plants_background.png", 1595, 96)
+--[[	local plants = display.newImageRect("res/plants_background.png", 1595, 96)
 	plants.x, plants.y = 0,450
-	objectGroup:insert(plants)
+	objectGroup:insert(plants)]]--
 	
 	Runtime:addEventListener( "enterFrame", update )
 	return setmetatable(_M, group_mt)
